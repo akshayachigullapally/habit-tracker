@@ -168,7 +168,7 @@ const Sidebar = ({ isOpen, onClose }) => {
                 {!isCollapsed && "Community"}
               </NavLink>
             </li>
-            <li>
+            {/* <li>
               <NavLink
                 to="/profile"
                 className={({ isActive }) => `
@@ -183,7 +183,7 @@ const Sidebar = ({ isOpen, onClose }) => {
                 <FaUser className={`w-5 h-5 ${isCollapsed ? '' : 'mr-3'}`} />
                 {!isCollapsed && "Profile"}
               </NavLink>
-            </li>
+            </li> */}
             <li>
               <NavLink
                 to="/settings"
