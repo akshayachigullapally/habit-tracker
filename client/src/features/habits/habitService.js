@@ -36,7 +36,7 @@ const getHabitById = async (habitId, token) => {
     }
   };
   
-  const response = await axios.get(`${API_URL}/api/habits` + habitId, config);
+  const response = await axios.get(`${API_URL}/api/habits/` + habitId, config);
   return response.data;
 };
 
@@ -48,7 +48,7 @@ const updateHabit = async (habitId, habitData, token) => {
     }
   };
   
-  const response = await axios.put(`${API_URL}/api/habits` + habitId, habitData, config);
+  const response = await axios.put(`${API_URL}/api/habits/` + habitId, habitData, config);
   return response.data;
 };
 
@@ -60,7 +60,7 @@ const deleteHabit = async (habitId, token) => {
     }
   };
   
-  const response = await axios.delete(`${API_URL}/api/habits` + habitId, config);
+  const response = await axios.delete(`${API_URL}/api/habits/` + habitId, config);
   return response.data;
 };
 

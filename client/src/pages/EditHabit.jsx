@@ -1,3 +1,5 @@
+import React from 'react';
+
 import HabitForm from '../pages/HabitForm';
 
 const EditHabit = () => {

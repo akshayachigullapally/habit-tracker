@@ -189,24 +189,24 @@ const updateHabit = async (req, res) => {
 const deleteHabit = async (req, res) => {
   try {
     const habit = await Habit.findById(req.params.id);
-    
+
     if (!habit) {
       return res.status(404).json({ message: 'Habit not found' });
     }
-    
-    // Check if habit belongs to user
+
     if (habit.user.toString() !== req.user._id.toString()) {
       return res.status(401).json({ message: 'Not authorized' });
     }
-    
-    await habit.remove();
-    
+
+    await Habit.findByIdAndDelete(req.params.id);
+
     res.json({ message: 'Habit removed' });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Server error', error: error.message });
   }
 };
+
 
 // @desc    Mark habit as complete for today
 // @route   POST /api/habits/:id/complete
