@@ -7,11 +7,11 @@ const Leaderboard = () => {
   const [leaderboardData, setLeaderboardData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const { user } = useSelector((state) => state.auth);
-
+const API_URL=import.meta.env.VITE_BACKEND_URL
   useEffect(() => {
     const fetchLeaderboardData = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/api/users/leaderboard');
+        const response = await axios.get(`${API_URL}/api/users/leaderboard`);
         console.log('Leaderboard API response:', response.data);
 
         // Adjust based on actual response format

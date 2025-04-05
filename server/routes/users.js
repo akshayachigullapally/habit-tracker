@@ -35,7 +35,7 @@ router.get('/leaderboard', async (req, res) => {
       .sort({ totalExperience: -1 })
       .limit(50);
 
-    console.log("users", users);
+    // console.log("users", users);
 
     res.status(200).json(users);
   } catch (error) {
