@@ -1,11 +1,15 @@
+import React from 'react';
+
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { FaArrowLeft, FaTimes, FaPlus, FaCamera } from 'react-icons/fa';
 import axios from 'axios';
+import { useSelector } from 'react-redux'; // Add this import
 
 const CreatePost = () => {
   const navigate = useNavigate();
+  const { user } = useSelector((state) => state.auth); // Get user (with token) from Redux
   const [formData, setFormData] = useState({
     title: '',
     content: '',
@@ -16,7 +20,7 @@ const CreatePost = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [imagePreview, setImagePreview] = useState(null);
   const [imageFile, setImageFile] = useState(null);
-  
+  const API_URL = import.meta.env.VITE_BACKEND_URL;
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -83,14 +87,20 @@ const CreatePost = () => {
         
         const uploadResponse = await axios.post('/api/upload/image', formData, {
           headers: {
-            'Content-Type': 'multipart/form-data'
+            'Content-Type': 'multipart/form-data',
+            Authorization: `Bearer ${user.token}` // Add token here too
           }
         });
         
         postData.imageUrl = uploadResponse.data.imageUrl;
       }
       
-      const response = await axios.post('/api/posts', postData);
+      // Add authorization header with token
+      const response = await axios.post(`${API_URL}/api/community/posts`, postData, {
+        headers: {
+          Authorization: `Bearer ${user.token}`
+        }
+      });
       
       toast.success('Post created successfully');
       navigate(`/community/post/${response.data._id}`);

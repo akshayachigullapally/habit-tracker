@@ -23,12 +23,12 @@ const Community = () => {
   const [showFilters, setShowFilters] = useState(false)
   const [selectedTag, setSelectedTag] = useState('')
   const [popularTags, setPopularTags] = useState([]) // Initialize as empty array
-
+  const API_URL = import.meta.env.VITE_BACKEND_URL ;
   useEffect(() => {
     const fetchPosts = async () => {
       setIsLoading(true)
       try {
-        const response = await axios.get('/api/posts', {
+        const response = await axios.get(`${API_URL}/api/community/posts`, {
           params: {
             sort: filter,
             search: searchTerm,
@@ -56,7 +56,7 @@ const Community = () => {
 
   const handleLike = async (postId) => {
     try {
-      const response = await axios.post(`/api/posts/${postId}/like`)
+      const response = await axios.post(`/api/community/posts/${postId}/like`)
       setPosts((prevPosts) => {
         if (!Array.isArray(prevPosts)) return []
         
