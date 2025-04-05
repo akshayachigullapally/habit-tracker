@@ -121,6 +121,26 @@ export const updateSettings = createAsyncThunk(
   }
 );
 
+// Get current user
+export const getCurrentUser = createAsyncThunk(
+  'auth/getCurrentUser',
+  async (_, thunkAPI) => {
+    try {
+      const token = thunkAPI.getState().auth.user.token;
+      return await authService.getCurrentUser(token);
+    } catch (error) {
+      const message = 
+        (error.response && 
+          error.response.data && 
+          error.response.data.message) ||
+        error.message ||
+        error.toString();
+        
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
+
 export const authSlice = createSlice({
   name: 'auth',
   initialState,
@@ -130,7 +150,10 @@ export const authSlice = createSlice({
       state.isSuccess = false;
       state.isError = false;
       state.message = '';
-    }
+    },
+    updateUserXP: (state, action) => {
+      state.user = action.payload;
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -208,9 +231,22 @@ export const authSlice = createSlice({
         state.isLoading = false;
         state.isError = true;
         state.message = action.payload;
+      })
+      .addCase(getCurrentUser.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(getCurrentUser.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.isSuccess = true;
+        state.user = action.payload;
+      })
+      .addCase(getCurrentUser.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isError = true;
+        state.message = action.payload;
       });
   }
 });
 
-export const { reset } = authSlice.actions;
+export const { reset, updateUserXP } = authSlice.actions;
 export default authSlice.reducer;

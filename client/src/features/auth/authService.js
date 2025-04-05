@@ -93,13 +93,37 @@ const updateSettings = async (settingsData, token) => {
   return response.data;
 };
 
+// Get current user data
+const getCurrentUser = async (token) => {
+  const config = {
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  };
+
+  const response = await axios.get(API_URL + 'me', config);
+
+  if (response.data) {
+    // Update stored user data with fresh data
+    const currentUser = JSON.parse(localStorage.getItem('user'));
+    const updatedUser = {
+      ...response.data,
+      token: currentUser.token // Keep the token
+    };
+    localStorage.setItem('user', JSON.stringify(updatedUser));
+  }
+
+  return response.data;
+};
+
 const authService = {
   register,
   login,
   logout,
   updateProfile,
   updatePassword,
-  updateSettings
+  updateSettings,
+  getCurrentUser  // Add this to the exports
 };
 
 export default authService;

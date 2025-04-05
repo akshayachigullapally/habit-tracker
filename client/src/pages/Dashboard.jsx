@@ -2,12 +2,14 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { getHabits, completeHabit } from '../features/habits/habitSlice';
+import { getCurrentUser } from '../features/auth/authSlice';
 import { toast } from 'react-toastify';
 import { FaPlus, FaCalendarAlt, FaTrophy, FaFire } from 'react-icons/fa';
 import HabitCard from '../components/HabitCard';
 import StatsCard from '../components/StatsCard';
 
 const Dashboard = () => {
+  
   const dispatch = useDispatch();
   const { habits, isLoading } = useSelector((state) => state.habits);
   const { user } = useSelector((state) => state.auth);
@@ -26,6 +28,7 @@ const Dashboard = () => {
     try {
       const result = await dispatch(completeHabit(habitId)).unwrap();
       toast.success(`+${result.xpGained} XP! Habit completed 🎉`);
+      dispatch(getCurrentUser());
     } catch (error) {
       toast.error(error || 'Failed to complete habit');
     } finally {

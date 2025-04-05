@@ -76,18 +76,38 @@ export const deleteHabit = createAsyncThunk(
   }
 )
 
+// In your completeHabit thunk action
+
 export const completeHabit = createAsyncThunk(
   'habits/complete',
-  async (id, thunkAPI) => {
+  async (habitId, thunkAPI) => {
     try {
-      const token = thunkAPI.getState().auth.user.token
-      return await habitService.completeHabit(id, token)
+      const token = thunkAPI.getState().auth.user.token;
+      const response = await habitService.completeHabit(habitId, token);
+      
+      // After habit completion, update the user data in auth state
+      const { user } = thunkAPI.getState().auth;
+      if (user) {
+        // Update user in localStorage with new XP
+        const updatedUser = { 
+          ...user, 
+          experience: (user.experience || 0) + response.xpGained 
+        };
+        localStorage.setItem('user', JSON.stringify(updatedUser));
+        
+        // Dispatch an action to update Redux state
+        thunkAPI.dispatch({ 
+          type: 'auth/updateUserXP', 
+          payload: updatedUser 
+        });
+      }
+      
+      return response;
     } catch (error) {
-      const message = error.response?.data?.message || error.message || 'Something went wrong'
-      return thunkAPI.rejectWithValue(message)
+      return thunkAPI.rejectWithValue(error.response?.data?.message || error.message);
     }
   }
-)
+);
 
 export const getHabitStats = createAsyncThunk(
   'habits/stats',
