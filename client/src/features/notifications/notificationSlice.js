@@ -15,7 +15,8 @@ export const getNotifications = createAsyncThunk(
   'notifications/getAll',
   async (_, thunkAPI) => {
     try {
-      const token = thunkAPI.getState().auth.user.token;
+      const token = thunkAPI.getState().auth.user?.token;
+      if (!token) return [];
       return await notificationService.getNotifications(token);
     } catch (error) {
       const message = 
@@ -111,7 +112,7 @@ export const deleteReadNotifications = createAsyncThunk(
 );
 
 export const notificationSlice = createSlice({
-  name: 'notification',
+  name: 'notifications',
   initialState,
   reducers: {
     reset: (state) => {
@@ -122,8 +123,10 @@ export const notificationSlice = createSlice({
     },
     addNotification: (state, action) => {
       state.notifications.unshift(action.payload);
-      state.unreadCount += 1;
-    }
+      if (!action.payload.isRead) {
+        state.unreadCount += 1;
+      }
+    },
   },
   extraReducers: (builder) => {
     builder

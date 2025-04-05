@@ -9,7 +9,7 @@ const LevelUpNotification = ({ show, onClick }) => {
           initial={{ y: -100, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: -100, opacity: 0 }}
-          className="fixed top-20 right-4 z-50"
+          className="fixed top-20 left-4 z-50" // Changed from right-4 to left-4
         >
           <motion.button
             whileHover={{ scale: 1.05 }}

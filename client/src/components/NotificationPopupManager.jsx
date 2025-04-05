@@ -3,7 +3,8 @@ import { useSelector } from 'react-redux';
 import NotificationToast from './NotificationToast';
 
 const NotificationPopupManager = () => {
-  const { notifications } = useSelector((state) => state.notifications);
+  // Safely access notifications with a default empty array
+  const { notifications = [] } = useSelector((state) => state.notifications || { notifications: [] });
   const [toasts, setToasts] = useState([]);
   const prevNotificationsRef = useRef(null);
   
@@ -12,8 +13,14 @@ const NotificationPopupManager = () => {
 
   // Check for new notifications
   useEffect(() => {
-    if (!notifications || !notifications.length || !prevNotificationsRef.current) {
+    if (!notifications || !notifications.length) {
       // Save current notifications for future comparison
+      prevNotificationsRef.current = notifications || [];
+      return;
+    }
+
+    // If first load, just set the ref without showing toasts
+    if (!prevNotificationsRef.current) {
       prevNotificationsRef.current = notifications;
       return;
     }

@@ -14,6 +14,7 @@ import {
   FaChevronLeft,
   FaChevronRight
 } from 'react-icons/fa';
+import RewardsMenu from './RewardsMenu';
 
 const Sidebar = ({ isOpen, onClose }) => {
   const dispatch = useDispatch(); // Add this line
@@ -198,6 +199,11 @@ const Sidebar = ({ isOpen, onClose }) => {
             </li>
           </ul>
         </nav>
+        
+        <div className="py-4 flex-1">
+  
+          <RewardsMenu />
+        </div>
         
         {/* Footer */}
         <div className="absolute bottom-0 left-0 right-0 px-6 py-4 border-t border-gray-200 dark:border-gray-700">

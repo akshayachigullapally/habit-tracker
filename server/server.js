@@ -11,6 +11,7 @@ const userRoutes = require('./routes/users');
 const achievementRoutes = require('./routes/achievements');
 const notificationRoutes = require('./routes/notifications');
 const communityRoutes = require('./routes/community');
+const rewardRoutes = require('./routes/rewards');
 
 // Config
 dotenv.config();
@@ -33,6 +34,7 @@ app.use('/api/users', userRoutes);
 app.use('/api/achievements', achievementRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/community', communityRoutes);
+app.use('/api/rewards', rewardRoutes);
 
 // Serve static assets if in production
 if (process.env.NODE_ENV === 'production') {

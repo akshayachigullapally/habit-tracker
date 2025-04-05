@@ -1,10 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import confetti from 'canvas-confetti';
+import axios from 'axios';
+import { useDispatch } from 'react-redux';
+import { collectReward } from '../features/rewards/rewardSlice';
 
 const MysteryBox = ({ isOpen, onClose, level }) => {
   const [boxOpened, setBoxOpened] = useState(false);
   const [reward, setReward] = useState(null);
+  const [collecting, setCollecting] = useState(false);
+  const dispatch = useDispatch();
 
   const rewards = [
     { type: 'avatar', icon: '🧑‍🎨', title: 'New Avatar', description: 'You unlocked a new avatar!' },
@@ -18,6 +23,7 @@ const MysteryBox = ({ isOpen, onClose, level }) => {
       // Reset state when modal is opened
       setBoxOpened(false);
       setReward(null);
+      setCollecting(false);
 
       // Automatically open the box after 2 seconds
       const timer = setTimeout(() => {
@@ -47,10 +53,25 @@ const MysteryBox = ({ isOpen, onClose, level }) => {
     });
   };
 
-  const handleShare = () => {
-    // Implement share functionality - for now just log
-    console.log('Sharing reward:', reward);
-    // Could integrate with social media APIs or copy to clipboard
+  const handleCollect = async () => {
+    if (!reward) return;
+    
+    setCollecting(true);
+    try {
+      // Dispatch action to add reward to user's collection
+      await dispatch(collectReward({
+        type: reward.type,
+        title: reward.title,
+        description: reward.description,
+        icon: reward.icon
+      })).unwrap();
+      
+      onClose();
+    } catch (error) {
+      console.error('Error collecting reward:', error);
+    } finally {
+      setCollecting(false);
+    }
   };
 
   return (
@@ -119,14 +140,24 @@ const MysteryBox = ({ isOpen, onClose, level }) => {
 
                 <div className="flex justify-center space-x-4">
                   <button
-                    onClick={handleShare}
-                    className="px-4 py-2 bg-blue-100 text-blue-600 hover:bg-blue-200 dark:bg-blue-900/30 dark:text-blue-300 dark:hover:bg-blue-800/50 rounded-md transition font-medium flex items-center"
+                    onClick={handleCollect}
+                    disabled={collecting}
+                    className="px-4 py-2 bg-green-100 text-green-600 hover:bg-green-200 dark:bg-green-900/30 dark:text-green-300 dark:hover:bg-green-800/50 rounded-md transition font-medium flex items-center disabled:opacity-50"
                   >
-                    <span className="mr-2">📣</span> Share
+                    {collecting ? (
+                      <>
+                        <span className="mr-2 animate-spin">⏳</span> Collecting...
+                      </>
+                    ) : (
+                      <>
+                        <span className="mr-2">📥</span> Collect
+                      </>
+                    )}
                   </button>
                   <button
                     onClick={onClose}
                     className="px-4 py-2 bg-gray-100 text-gray-800 hover:bg-gray-200 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600 rounded-md transition font-medium"
+                    disabled={collecting}
                   >
                     Close
                   </button>

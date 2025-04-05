@@ -10,6 +10,7 @@ import { store } from './app/store';
 import { ThemeProvider } from './context/ThemeContext';
 import { getHabits } from './features/habits/habitSlice';
 import { scheduleHabitReminders, checkNotificationPermission } from './utils/notificationService';
+import { getNotifications } from './features/notifications/notificationSlice';
 
 // Layout components
 import Layout from './components/Layout';
@@ -114,6 +115,13 @@ function App() {
     }
   }, [user?.level, prevLevel]);
 
+  // Fetch notifications when user is logged in
+  useEffect(() => {
+    if (user) {
+      dispatch(getNotifications());
+    }
+  }, [dispatch, user]);
+
   const handleOpenMysteryBox = () => {
     setShowMysteryBox(true);
     setShowLevelUpNotification(false); // Hide notification when box is opened
@@ -129,12 +137,13 @@ function App() {
               autoClose={5000}
               hideProgressBar={false}
               newestOnTop
-              closeOnClick
+              closeOnClick={true}  // This ensures clicking anywhere on toast closes it
               rtl={false}
               pauseOnFocusLoss
               draggable
               pauseOnHover
               theme={isDarkMode ? "dark" : "light"}
+              closeButton={true}   // Ensure close button is visible
             />
             
             <NotificationPopupManager />
@@ -186,5 +195,7 @@ function App() {
     </Provider>
   );
 }
+
+
 
 export default App;

@@ -58,10 +58,10 @@ const checkForLevelUp = async (user) => {
     user.experience -= requiredXP;
     user.level += 1;
     
-    // Create notification for level up
+    // Create notification for level up - changed type from 'level' to 'achievement'
     await Notification.create({
       user: user._id,
-      type: 'level',
+      type: 'achievement',  // Changed from 'level' to 'achievement'
       title: 'Level Up!',
       message: `Congratulations! You've reached level ${user.level}!`
     });
