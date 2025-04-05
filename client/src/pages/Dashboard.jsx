@@ -16,6 +16,7 @@ const Dashboard = () => {
   
   const [view, setView] = useState('daily');
   const [completingHabit, setCompletingHabit] = useState(null);
+  const [prevLevel, setPrevLevel] = useState(user?.level || 1);
   
   const safeHabits = habits || [];
   
@@ -68,6 +69,17 @@ const Dashboard = () => {
     
     checkSupport();
   }, []);
+
+  // Check for level up
+  useEffect(() => {
+    if (user && user.level > prevLevel) {
+      toast.success(`🎉 Congratulations! You've reached level ${user.level}!`, {
+        icon: <FaTrophy className="text-amber-500" />,
+        className: "level-up-toast"
+      });
+      setPrevLevel(user.level);
+    }
+  }, [user, prevLevel]);
 
   const handleComplete = async (habitId) => {
     setCompletingHabit(habitId);

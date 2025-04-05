@@ -152,7 +152,15 @@ export const authSlice = createSlice({
       state.message = '';
     },
     updateUserXP: (state, action) => {
+      // Update user with new XP
       state.user = action.payload;
+      
+      // Check if user should level up (XP exceeds 100 points)
+      if (state.user && state.user.experience >= 100) {
+        const levelIncrease = Math.floor(state.user.experience / 100);
+        state.user.level += levelIncrease;
+        state.user.experience = state.user.experience % 100;
+      }
     },
   },
   extraReducers: (builder) => {

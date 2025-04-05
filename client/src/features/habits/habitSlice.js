@@ -76,7 +76,7 @@ export const deleteHabit = createAsyncThunk(
   }
 )
 
-// In your completeHabit thunk action
+// Update the completeHabit thunk to handle level-ups
 
 export const completeHabit = createAsyncThunk(
   'habits/complete',
@@ -88,10 +88,17 @@ export const completeHabit = createAsyncThunk(
       // After habit completion, update the user data in auth state
       const { user } = thunkAPI.getState().auth;
       if (user) {
-        // Update user in localStorage with new XP
+        // Calculate new XP and level
+        const newXP = (user.experience || 0) + response.xpGained;
+        const levelIncrease = Math.floor(newXP / 100);
+        const remainingXP = newXP % 100;
+        const newLevel = (user.level || 1) + levelIncrease;
+        
+        // Update user in localStorage with new XP and level
         const updatedUser = { 
           ...user, 
-          experience: (user.experience || 0) + response.xpGained 
+          experience: remainingXP,
+          level: newLevel
         };
         localStorage.setItem('user', JSON.stringify(updatedUser));
         
@@ -100,6 +107,11 @@ export const completeHabit = createAsyncThunk(
           type: 'auth/updateUserXP', 
           payload: updatedUser 
         });
+        
+        // Show level up toast if user leveled up
+        if (levelIncrease > 0) {
+          thunkAPI.dispatch({ type: 'toast/levelUp', payload: newLevel });
+        }
       }
       
       return response;
