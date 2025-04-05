@@ -8,6 +8,8 @@ import { FaPlus, FaCalendarAlt, FaTrophy, FaFire } from 'react-icons/fa';
 import HabitCard from '../components/HabitCard';
 import StatsCard from '../components/StatsCard';
 import { scheduleHabitReminders, checkNotificationPermission, sendNotification } from '../utils/notificationService';
+import LevelUpNotification from '../components/LevelUpNotification';
+import MysteryBox from '../components/MysteryBox';
 
 const Dashboard = () => {
   const dispatch = useDispatch();
@@ -17,6 +19,8 @@ const Dashboard = () => {
   const [view, setView] = useState('daily');
   const [completingHabit, setCompletingHabit] = useState(null);
   const [prevLevel, setPrevLevel] = useState(user?.level || 1);
+  const [showLevelUpNotification, setShowLevelUpNotification] = useState(false);
+  const [showMysteryBox, setShowMysteryBox] = useState(false);
   
   const safeHabits = habits || [];
   
@@ -78,8 +82,23 @@ const Dashboard = () => {
         className: "level-up-toast"
       });
       setPrevLevel(user.level);
+      
+      // Show level up notification banner for magical box
+      setShowLevelUpNotification(true);
+      
+      // Hide notification after 15 seconds if not clicked
+      const timer = setTimeout(() => {
+        setShowLevelUpNotification(false);
+      }, 15000);
+      
+      return () => clearTimeout(timer);
     }
   }, [user, prevLevel]);
+
+  const handleOpenMysteryBox = () => {
+    setShowMysteryBox(true);
+    setShowLevelUpNotification(false); // Hide notification when box is opened
+  };
 
   const handleComplete = async (habitId) => {
     setCompletingHabit(habitId);
@@ -134,6 +153,18 @@ const Dashboard = () => {
 
   return (
     <div>
+      {/* Level up notification and Mystery Box */}
+      <LevelUpNotification 
+        show={showLevelUpNotification} 
+        onClick={handleOpenMysteryBox} 
+      />
+      
+      <MysteryBox 
+        isOpen={showMysteryBox} 
+        onClose={() => setShowMysteryBox(false)} 
+        level={user?.level || 1}
+      />
+
       <div className="flex flex-col md:flex-row md:items-center justify-between mb-6">
         <div>
           <h1 className="text-2xl font-bold text-gray-800 dark:text-white mb-1">

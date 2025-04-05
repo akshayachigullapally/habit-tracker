@@ -38,12 +38,17 @@ import NotFound from './pages/NotFound';
 
 // Import the new component
 import NotificationPopupManager from './components/NotificationPopupManager';
+import MysteryBox from './components/MysteryBox';
+import LevelUpNotification from './components/LevelUpNotification';
 
 function App() {
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth);
   const { habits } = useSelector((state) => state.habits);
   const [isDarkMode, setIsDarkMode] = useState(false);
+  const [showMysteryBox, setShowMysteryBox] = useState(false);
+  const [showLevelUpNotification, setShowLevelUpNotification] = useState(false);
+  const [prevLevel, setPrevLevel] = useState(user?.level || 1);
   
   // Check system preference and localStorage for dark mode
   useEffect(() => {
@@ -92,6 +97,27 @@ function App() {
       console.log('Notification permission:', granted ? 'granted' : 'denied');
     });
   }, []);
+
+  // Check for level up - update the existing useEffect or add a new one
+  useEffect(() => {
+    if (user && user.level > prevLevel) {
+      // Show level up notification
+      setShowLevelUpNotification(true);
+      setPrevLevel(user.level);
+      
+      // Hide notification after 15 seconds if not clicked
+      const timer = setTimeout(() => {
+        setShowLevelUpNotification(false);
+      }, 15000);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [user?.level, prevLevel]);
+
+  const handleOpenMysteryBox = () => {
+    setShowMysteryBox(true);
+    setShowLevelUpNotification(false); // Hide notification when box is opened
+  };
   
   return (
     <Provider store={store}>
@@ -112,6 +138,19 @@ function App() {
             />
             
             <NotificationPopupManager />
+            
+            {/* Level up notification and Mystery Box */}
+            <LevelUpNotification 
+              show={showLevelUpNotification} 
+              onClick={handleOpenMysteryBox} 
+              level={user?.level || 1}
+            />
+            
+            <MysteryBox 
+              isOpen={showMysteryBox} 
+              onClose={() => setShowMysteryBox(false)} 
+              level={user?.level || 1}
+            />
             
             <Routes>
               {/* Public Routes */}
