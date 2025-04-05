@@ -1,6 +1,8 @@
 import axios from 'axios';
 
-const API_URL = '/api/notifications';
+// const API_URL = '/api/notifications';
+let API_URL= import.meta.env.VITE_BACKEND_URL ;
+
 
 // Get user notifications
 const getNotifications = async () => {

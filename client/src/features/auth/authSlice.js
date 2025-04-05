@@ -1,6 +1,9 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import authService from './authService';
 
+let API_URL= import.meta.env.VITE_BACKEND_URL;
+
+
 // Get user from localStorage
 const user = JSON.parse(localStorage.getItem('user'));
 
@@ -14,7 +17,7 @@ const initialState = {
 
 // Register user
 export const register = createAsyncThunk(
-  'http://localhost:5000/auth/register',
+  `${API_URL}/auth/register`,
   async (user, thunkAPI) => {
     try {
       return await authService.register(user);

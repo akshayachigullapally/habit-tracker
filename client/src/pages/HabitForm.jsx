@@ -1,16 +1,16 @@
+import React from 'react';
 import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useParams, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { createHabit, getHabitById, updateHabit, reset } from '../features/habits/habitSlice';
 
-const HabitForm = () => {
+const HabitForm = ({ isEditMode = false }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { id } = useParams();
-  const isEditMode = Boolean(id);
   
-  const { habit, isLoading, isError, isSuccess } = useSelector((state) => state.habits);
+  const { habit, isLoading, isError, isSuccess, message } = useSelector((state) => state.habits);
   
   const [formData, setFormData] = useState({
     title: '',
@@ -24,6 +24,8 @@ const HabitForm = () => {
     reminderTime: '',
     difficulty: 'medium'
   });
+  
+  const [formSubmitted, setFormSubmitted] = useState(false);
   
   const weekDays = [
     { value: 'monday', label: 'Monday' },
@@ -43,12 +45,17 @@ const HabitForm = () => {
   
   // Fetch habit data if in edit mode
   useEffect(() => {
-    if (isEditMode) {
+    // Reset the form state at component mount
+    dispatch(reset());
+    
+    if (isEditMode && id) {
       dispatch(getHabitById(id));
-    } else {
-      // Reset form when creating a new habit
-      dispatch(reset());
     }
+    
+    // Cleanup function to reset state when component unmounts
+    return () => {
+      dispatch(reset());
+    };
   }, [dispatch, id, isEditMode]);
   
   // Populate form when habit data is available in edit mode
@@ -69,22 +76,21 @@ const HabitForm = () => {
     }
   }, [habit, isEditMode]);
   
-  // Handle form success
+  // Handle form success/error
   useEffect(() => {
-    if (isSuccess) {
-      toast.success(`Habit ${isEditMode ? 'updated' : 'created'} successfully`);
-      navigate('/dashboard');
-      dispatch(reset());
+    if (formSubmitted) {
+      if (isSuccess) {
+        toast.success(`Habit ${isEditMode ? 'updated' : 'created'} successfully`);
+        navigate('/dashboard');
+        setFormSubmitted(false);
+      }
+      
+      if (isError) {
+        toast.error(message || 'Something went wrong. Please try again.');
+        setFormSubmitted(false);
+      }
     }
-  }, [isSuccess, dispatch, navigate, isEditMode]);
-  
-  // Handle form error
-  useEffect(() => {
-    if (isError) {
-      toast.error('Something went wrong. Please try again.');
-      dispatch(reset());
-    }
-  }, [isError, dispatch]);
+  }, [isSuccess, isError, message, navigate, isEditMode, formSubmitted]);
   
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -121,7 +127,9 @@ const HabitForm = () => {
       return;
     }
     
-    if (isEditMode) {
+    setFormSubmitted(true);
+    
+    if (isEditMode && id) {
       dispatch(updateHabit({ id, habitData: formData }));
     } else {
       dispatch(createHabit(formData));
@@ -204,8 +212,8 @@ const HabitForm = () => {
             Frequency
           </label>
           <div className="grid grid-cols-3 gap-2">
-            <label className="flex items-center p-3 border rounded-md cursor-pointer transition-colors
-                  ${formData.frequency === 'daily' ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20' : 'border-gray-300 dark:border-gray-600'}">
+            <label className={`flex items-center p-3 border rounded-md cursor-pointer transition-colors
+                  ${formData.frequency === 'daily' ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20' : 'border-gray-300 dark:border-gray-600'}`}>
               <input
                 type="radio"
                 name="frequency"
@@ -217,8 +225,8 @@ const HabitForm = () => {
               <span className="text-gray-800 dark:text-white">Daily</span>
             </label>
             
-            <label className="flex items-center p-3 border rounded-md cursor-pointer transition-colors
-                  ${formData.frequency === 'weekly' ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20' : 'border-gray-300 dark:border-gray-600'}">
+            <label className={`flex items-center p-3 border rounded-md cursor-pointer transition-colors
+                  ${formData.frequency === 'weekly' ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20' : 'border-gray-300 dark:border-gray-600'}`}>
               <input
                 type="radio"
                 name="frequency"
@@ -230,8 +238,8 @@ const HabitForm = () => {
               <span className="text-gray-800 dark:text-white">Weekly</span>
             </label>
             
-            <label className="flex items-center p-3 border rounded-md cursor-pointer transition-colors
-                  ${formData.frequency === 'custom' ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20' : 'border-gray-300 dark:border-gray-600'}">
+            <label className={`flex items-center p-3 border rounded-md cursor-pointer transition-colors
+                  ${formData.frequency === 'custom' ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20' : 'border-gray-300 dark:border-gray-600'}`}>
               <input
                 type="radio"
                 name="frequency"

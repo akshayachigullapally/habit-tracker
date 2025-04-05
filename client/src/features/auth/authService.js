@@ -1,10 +1,11 @@
 import axios from 'axios';
 
-const API_URL = '/api/auth/';
+// const API_URL = '/api/auth/';
+let API_URL= import.meta.env.VITE_BACKEND_URL ;
 
 // Register user
 const register = async (userData) => {
-  const response = await axios.post("http://localhost:5000"+API_URL + 'register', userData);
+  const response = await axios.post(`${API_URL}/api/auth/register`, userData);
 
   if (response.data) {
     localStorage.setItem('user', JSON.stringify(response.data));
@@ -15,7 +16,7 @@ const register = async (userData) => {
 
 // Login user
 const login = async (userData) => {
-  const response = await axios.post("http://localhost:5000"+API_URL + 'login', userData);
+  const response = await axios.post(`${API_URL}/api/auth/login`, userData);
 
   if (response.data) {
     localStorage.setItem('user', JSON.stringify(response.data));
@@ -37,7 +38,7 @@ const updateProfile = async (userData, token) => {
     }
   };
 
-  const response = await axios.put(API_URL + 'profile', userData, config);
+  const response = await axios.put(`${API_URL}/api/auth/profile`, userData, config);
 
   // Update the stored user data with new profile info
   if (response.data) {
@@ -65,7 +66,7 @@ const updatePassword = async (passwordData, token) => {
     }
   };
 
-  const response = await axios.put(API_URL + 'update-password', passwordData, config);
+  const response = await axios.put(`${API_URL}/api/auth/update-password`, passwordData, config);
   return response.data;
 };
 
@@ -77,7 +78,7 @@ const updateSettings = async (settingsData, token) => {
     }
   };
 
-  const response = await axios.put(API_URL + 'settings', settingsData, config);
+  const response = await axios.put(`${API_URL}/api/auth/settings`, settingsData, config);
   
   // Update settings in local storage
   if (response.data) {

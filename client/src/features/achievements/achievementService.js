@@ -1,6 +1,11 @@
 import axios from 'axios';
+// import from dotenv
+// import dotenv from 'dotenv';
+// dotenv.config();
 
-const API_URL = '/api/achievements';
+let API_URL= import.meta.env.VITE_BACKEND_URL;
+// console.log(API_URL)
+// let API_URL = 'http:localhost:5000/api/achievements';
 
 // Get all achievements
 const getAchievements = async () => {
@@ -10,7 +15,7 @@ const getAchievements = async () => {
 
 // Check achievement progress (triggers server to check if any achievements are completed)
 const checkAchievements = async () => {
-  const response = await axios.post(`${API_URL}/check`);
+  const response = await axios.post(`${API_URL}/achievements/check`);
   return response.data;
 };
 

@@ -92,7 +92,7 @@ const Sidebar = ({ isOpen, onClose }) => {
                 Dashboard
               </NavLink>
             </li>
-            <li>
+            {/* <li>
               <NavLink
                 to="/habits"
                 className={({ isActive }) => `
@@ -105,7 +105,7 @@ const Sidebar = ({ isOpen, onClose }) => {
                 <FaPlus className="w-5 h-5 mr-3" />
                 Habits
               </NavLink>
-            </li>
+            </li> */}
             <li>
               <NavLink
                 to="/achievements"

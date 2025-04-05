@@ -1,6 +1,8 @@
 import axios from 'axios';
 
-const API_URL = '/api/habits/';
+// const API_URL = '/api/habits/';
+let API_URL= import.meta.env.VITE_BACKEND_URL 
+
 
 // Create a new habit
 const createHabit = async (habitData, token) => {
@@ -10,7 +12,7 @@ const createHabit = async (habitData, token) => {
     }
   };
   
-  const response = await axios.post(API_URL, habitData, config);
+  const response = await axios.post(`${API_URL}/api/habits`, habitData, config);
   return response.data;
 };
 
@@ -22,7 +24,7 @@ const getHabits = async (token) => {
     }
   };
   
-  const response = await axios.get(API_URL, config);
+  const response = await axios.get(`${API_URL}/api/habits`, config);
   return response.data;
 };
 
@@ -34,7 +36,7 @@ const getHabitById = async (habitId, token) => {
     }
   };
   
-  const response = await axios.get(API_URL + habitId, config);
+  const response = await axios.get(`${API_URL}/api/habits` + habitId, config);
   return response.data;
 };
 
@@ -46,7 +48,7 @@ const updateHabit = async (habitId, habitData, token) => {
     }
   };
   
-  const response = await axios.put(API_URL + habitId, habitData, config);
+  const response = await axios.put(`${API_URL}/api/habits` + habitId, habitData, config);
   return response.data;
 };
 
@@ -58,7 +60,7 @@ const deleteHabit = async (habitId, token) => {
     }
   };
   
-  const response = await axios.delete(API_URL + habitId, config);
+  const response = await axios.delete(`${API_URL}/api/habits` + habitId, config);
   return response.data;
 };
 
@@ -70,7 +72,7 @@ const completeHabit = async (habitId, token) => {
     }
   };
   
-  const response = await axios.post(API_URL + habitId + '/complete', {}, config);
+  const response = await axios.post(`${API_URL}/api/habits` + habitId + '/complete', {}, config);
   return response.data;
 };
 
@@ -82,7 +84,7 @@ const getHabitStats = async (token) => {
     }
   };
   
-  const response = await axios.get(API_URL + 'stats', config);
+  const response = await axios.get(`${API_URL}/api/habits/stats`, config);
   return response.data;
 };
 
