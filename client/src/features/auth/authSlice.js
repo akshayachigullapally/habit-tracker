@@ -162,6 +162,38 @@ export const authSlice = createSlice({
         state.user.experience = state.user.experience % 100;
       }
     },
+    // Add the addXp function
+    addXp: (state, action) => {
+      if (!state.user) return;
+      
+      // Add XP to the user
+      const earnedXp = action.payload;
+      const currentXp = state.user.experience || 0;
+      const newTotalXp = currentXp + earnedXp;
+      
+      // Check if user should level up
+      const requiredXp = (state.user.level || 1) * 100;
+      
+      if (newTotalXp >= requiredXp) {
+        // Level up
+        const levelIncrease = Math.floor(newTotalXp / requiredXp);
+        const remainingXp = newTotalXp % requiredXp;
+        
+        state.user.level = (state.user.level || 1) + levelIncrease;
+        state.user.experience = remainingXp;
+      } else {
+        // Just update XP
+        state.user.experience = newTotalXp;
+      }
+      
+      // Update totalExperience if it exists
+      if (state.user.totalExperience !== undefined) {
+        state.user.totalExperience += earnedXp;
+      }
+      
+      // Update the user in localStorage
+      localStorage.setItem('user', JSON.stringify(state.user));
+    }
   },
   extraReducers: (builder) => {
     builder
@@ -256,5 +288,5 @@ export const authSlice = createSlice({
   }
 });
 
-export const { reset, updateUserXP } = authSlice.actions;
+export const { reset, updateUserXP, addXp } = authSlice.actions;
 export default authSlice.reducer;

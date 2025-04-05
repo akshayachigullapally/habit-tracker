@@ -26,21 +26,32 @@ import Landing from './pages/Landing';
 // Protected pages
 import Dashboard from './pages/Dashboard';
 import HabitDetails from './pages/HabitDetails';
-import CreateHabit from './pages/CreateHabit';
-import EditHabit from './pages/EditHabit';
+import HabitForm from './pages/HabitForm';
 import Profile from './pages/Profile';
-import Leaderboard from './pages/Leaderboard';
-import Community from './pages/Community';
-import Post from './pages/Post';
-import CreatePost from './pages/CreatePost';
-import Notifications from './pages/Notifications';
 import Settings from './pages/Settings';
-import NotFound from './pages/NotFound';
+import Achievements from './pages/Achievements';
+import Notifications from './pages/Notifications';
+import Community from './pages/Community';
+import CreatePost from './pages/CreatePost'; 
+import Post from './pages/Post';
+import Leaderboard from './pages/Leaderboard';
+import Quiz from './pages/Quiz'; // Import the new Quiz page
 
-// Import the new component
+// Components
 import NotificationPopupManager from './components/NotificationPopupManager';
-import MysteryBox from './components/MysteryBox';
 import LevelUpNotification from './components/LevelUpNotification';
+import MysteryBox from './components/MysteryBox';
+
+// Protect routes that require authentication
+const ProtectedRoute = ({ children }) => {
+  const { user } = useSelector((state) => state.auth);
+  
+  if (!user) {
+    return <Navigate to="/login" replace />;
+  }
+  
+  return children;
+};
 
 function App() {
   const dispatch = useDispatch();
@@ -70,36 +81,11 @@ function App() {
     } else {
       document.documentElement.classList.remove('dark');
     }
+    
     localStorage.setItem('darkMode', isDarkMode);
   }, [isDarkMode]);
   
-  const toggleDarkMode = () => {
-    setIsDarkMode(!isDarkMode);
-  };
-
-  // Initialize notifications when app loads if user is logged in
-  useEffect(() => {
-    if (user) {
-      dispatch(getHabits()).then(result => {
-        if (result.payload && !result.error) {
-          checkNotificationPermission().then(granted => {
-            if (granted) {
-              scheduleHabitReminders(result.payload);
-            }
-          });
-        }
-      });
-    }
-  }, [dispatch, user]);
-
-  // Request notification permissions as soon as app loads
-  useEffect(() => {
-    checkNotificationPermission().then(granted => {
-      console.log('Notification permission:', granted ? 'granted' : 'denied');
-    });
-  }, []);
-
-  // Check for level up - update the existing useEffect or add a new one
+  // Check for level up
   useEffect(() => {
     if (user && user.level > prevLevel) {
       // Show level up notification
@@ -165,29 +151,80 @@ function App() {
               {/* Public Routes */}
               <Route element={<PublicLayout />}>
                 <Route path="/" element={<Landing />} />
-                <Route path="/login" element={user ? <Navigate to="/dashboard" /> : <Login />} />
-                <Route path="/register" element={user ? <Navigate to="/dashboard" /> : <Register />} />
-                <Route path="/forgot-password" element={user ? <Navigate to="/dashboard" /> : <ForgotPassword />} />
-                <Route path="/reset-password/:token" element={user ? <Navigate to="/dashboard" /> : <ResetPassword />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/register" element={<Register />} />
+                <Route path="/forgot-password" element={<ForgotPassword />} />
+                <Route path="/reset-password/:token" element={<ResetPassword />} />
               </Route>
               
               {/* Protected Routes */}
-              <Route element={<Layout toggleDarkMode={toggleDarkMode} isDarkMode={isDarkMode} />}>
-                <Route path="/dashboard" element={user ? <Dashboard /> : <Navigate to="/login" />} />
-                <Route path="/habits/new" element={user ? <CreateHabit /> : <Navigate to="/login" />} />
-                <Route path="/habits/:id" element={user ? <HabitDetails /> : <Navigate to="/login" />} />
-                <Route path="/habits/:id/edit" element={user ? <EditHabit /> : <Navigate to="/login" />} />
-                <Route path="/profile" element={user ? <Profile /> : <Navigate to="/login" />} />
-                <Route path="/achievements" element={user ? <Leaderboard /> : <Navigate to="/login" />} />
-                <Route path="/community" element={user ? <Community /> : <Navigate to="/login" />} />
-                <Route path="/community/post/:id" element={user ? <Post /> : <Navigate to="/login" />} />
-                <Route path="/community/new" element={user ? <CreatePost /> : <Navigate to="/login" />} />
-                <Route path="/notifications" element={user ? <Notifications /> : <Navigate to="/login" />} />
-                <Route path="/settings" element={user ? <Settings /> : <Navigate to="/login" />} />
+              <Route element={<Layout />}>
+                <Route path="/dashboard" element={
+                  <ProtectedRoute>
+                    <Dashboard />
+                  </ProtectedRoute>
+                } />
+                <Route path="/habits/:id" element={
+                  <ProtectedRoute>
+                    <HabitDetails />
+                  </ProtectedRoute>
+                } />
+                <Route path="/habits/new" element={
+                  <ProtectedRoute>
+                    <HabitForm />
+                  </ProtectedRoute>
+                } />
+                <Route path="/habits/edit/:id" element={
+                  <ProtectedRoute>
+                    <HabitForm isEditMode={true} />
+                  </ProtectedRoute>
+                } />
+                <Route path="/profile" element={
+                  <ProtectedRoute>
+                    <Profile />
+                  </ProtectedRoute>
+                } />
+                <Route path="/settings" element={
+                  <ProtectedRoute>
+                    <Settings />
+                  </ProtectedRoute>
+                } />
+                <Route path="/achievements" element={
+                  <ProtectedRoute>
+                    <Achievements />
+                  </ProtectedRoute>
+                } />
+                <Route path="/notifications" element={
+                  <ProtectedRoute>
+                    <Notifications />
+                  </ProtectedRoute>
+                } />
+                <Route path="/community" element={
+                  <ProtectedRoute>
+                    <Community />
+                  </ProtectedRoute>
+                } />
+                <Route path="/community/new" element={
+                  <ProtectedRoute>
+                    <CreatePost />
+                  </ProtectedRoute>
+                } />
+                <Route path="/community/post/:id" element={
+                  <ProtectedRoute>
+                    <Post />
+                  </ProtectedRoute>
+                } />
+                <Route path="/leaderboard" element={
+                  <ProtectedRoute>
+                    <Leaderboard />
+                  </ProtectedRoute>
+                } />
+                <Route path="/quiz" element={
+                  <ProtectedRoute>
+                    <Quiz />
+                  </ProtectedRoute>
+                } />
               </Route>
-              
-              {/* 404 Route */}
-              <Route path="*" element={<NotFound />} />
             </Routes>
           </div>
         </Router>
@@ -195,7 +232,5 @@ function App() {
     </Provider>
   );
 }
-
-
 
 export default App;
