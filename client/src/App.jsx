@@ -1,13 +1,15 @@
 import React from 'react';
 
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useState, useEffect } from 'react';
 import { Provider } from 'react-redux';
 import { store } from './app/store';
 import { ThemeProvider } from './context/ThemeContext';
+import { getHabits } from './features/habits/habitSlice';
+import { scheduleHabitReminders, checkNotificationPermission } from './utils/notificationService';
 
 // Layout components
 import Layout from './components/Layout';
@@ -35,7 +37,9 @@ import Settings from './pages/Settings';
 import NotFound from './pages/NotFound';
 
 function App() {
+  const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth);
+  const { habits } = useSelector((state) => state.habits);
   const [isDarkMode, setIsDarkMode] = useState(false);
   
   // Check system preference and localStorage for dark mode
@@ -63,6 +67,28 @@ function App() {
   const toggleDarkMode = () => {
     setIsDarkMode(!isDarkMode);
   };
+
+  // Initialize notifications when app loads if user is logged in
+  useEffect(() => {
+    if (user) {
+      dispatch(getHabits()).then(result => {
+        if (result.payload && !result.error) {
+          checkNotificationPermission().then(granted => {
+            if (granted) {
+              scheduleHabitReminders(result.payload);
+            }
+          });
+        }
+      });
+    }
+  }, [dispatch, user]);
+
+  // Request notification permissions as soon as app loads
+  useEffect(() => {
+    checkNotificationPermission().then(granted => {
+      console.log('Notification permission:', granted ? 'granted' : 'denied');
+    });
+  }, []);
   
   return (
     <Provider store={store}>

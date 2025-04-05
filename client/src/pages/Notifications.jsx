@@ -238,7 +238,7 @@ const Notifications = () => {
                         
                         {notification.actionUrl && (
                           <Link 
-                            to={notification.actionUrl} 
+                            to="/dashboard" 
                             className="mt-2 inline-block text-sm text-blue-600 dark:text-blue-400 hover:underline"
                           >
                             {notification.actionText || 'View details'}

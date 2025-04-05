@@ -7,21 +7,67 @@ import { toast } from 'react-toastify';
 import { FaPlus, FaCalendarAlt, FaTrophy, FaFire } from 'react-icons/fa';
 import HabitCard from '../components/HabitCard';
 import StatsCard from '../components/StatsCard';
+import { scheduleHabitReminders, checkNotificationPermission, sendNotification } from '../utils/notificationService';
 
 const Dashboard = () => {
-  
   const dispatch = useDispatch();
-  const { habits, isLoading } = useSelector((state) => state.habits);
   const { user } = useSelector((state) => state.auth);
-
+  const { habits, isLoading, isError, message } = useSelector((state) => state.habits);
+  
   const [view, setView] = useState('daily');
   const [completingHabit, setCompletingHabit] = useState(null);
-
-  const safeHabits = Array.isArray(habits) ? habits : [];
-
+  
+  const safeHabits = habits || [];
+  
   useEffect(() => {
+    if (isError) {
+      toast.error(message);
+    }
+    
     dispatch(getHabits());
-  }, [dispatch]);
+  }, [dispatch, isError, message]);
+  
+  // Set up habit reminders when habits are loaded
+  useEffect(() => {
+    if (safeHabits.length > 0) {
+      // Ask for notification permission (will only prompt once)
+      checkNotificationPermission().then(granted => {
+        if (granted) {
+          console.log('Scheduling reminders for habits:', safeHabits.map(h => 
+            ({ id: h._id, title: h.title, reminder: h.reminderTime })));
+          scheduleHabitReminders(safeHabits);
+        } else {
+          console.log('Notification permission denied');
+        }
+      });
+    }
+    
+    // Set up a recurring check to reschedule reminders every hour
+    const intervalId = setInterval(() => {
+      checkNotificationPermission().then(granted => {
+        if (granted) {
+          scheduleHabitReminders(safeHabits);
+        }
+      });
+    }, 60 * 60 * 1000); // Every hour
+    
+    return () => clearInterval(intervalId);
+  }, [safeHabits]);
+  
+  // Check notification support
+  useEffect(() => {
+    const checkSupport = async () => {
+      // Check if the browser supports notifications
+      if (!("Notification" in window)) {
+        console.error("This browser does not support desktop notifications");
+        toast.error("Your browser doesn't support notifications");
+      } else {
+        console.log("Notification permission:", Notification.permission);
+      }
+    };
+    
+    checkSupport();
+  }, []);
 
   const handleComplete = async (habitId) => {
     setCompletingHabit(habitId);
@@ -171,6 +217,18 @@ const Dashboard = () => {
           </Link>
         </div>
       )}
+
+      {/* <button
+        onClick={() => {
+          console.log('Testing notification system');
+          sendNotification('Test Notification', { 
+            body: 'This is a test notification'
+          });
+        }}
+        className="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded text-sm ml-2"
+      >
+        Test Notification
+      </button> */}
     </div>
   );
 };

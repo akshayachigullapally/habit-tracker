@@ -15,7 +15,8 @@ export const getNotifications = createAsyncThunk(
   'notifications/getAll',
   async (_, thunkAPI) => {
     try {
-      return await notificationService.getNotifications();
+      const token = thunkAPI.getState().auth.user.token;
+      return await notificationService.getNotifications(token);
     } catch (error) {
       const message = 
         (error.response && 
@@ -34,7 +35,8 @@ export const markAllAsRead = createAsyncThunk(
   'notifications/markAllRead',
   async (_, thunkAPI) => {
     try {
-      return await notificationService.markAllAsRead();
+      const token = thunkAPI.getState().auth.user.token;
+      return await notificationService.markAllAsRead(token);
     } catch (error) {
       const message = 
         (error.response && 
@@ -53,7 +55,8 @@ export const markAsRead = createAsyncThunk(
   'notifications/markRead',
   async (id, thunkAPI) => {
     try {
-      return await notificationService.markAsRead(id);
+      const token = thunkAPI.getState().auth.user.token;
+      return await notificationService.markAsRead(id, token);
     } catch (error) {
       const message = 
         (error.response && 
@@ -72,7 +75,8 @@ export const deleteNotification = createAsyncThunk(
   'notifications/delete',
   async (id, thunkAPI) => {
     try {
-      return await notificationService.deleteNotification(id);
+      const token = thunkAPI.getState().auth.user.token;
+      return await notificationService.deleteNotification(id, token);
     } catch (error) {
       const message = 
         (error.response && 
@@ -91,7 +95,8 @@ export const deleteReadNotifications = createAsyncThunk(
   'notifications/deleteRead',
   async (_, thunkAPI) => {
     try {
-      return await notificationService.deleteReadNotifications();
+      const token = thunkAPI.getState().auth.user.token;
+      return await notificationService.deleteReadNotifications(token);
     } catch (error) {
       const message = 
         (error.response && 
