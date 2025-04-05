@@ -5,6 +5,9 @@ import { useSelector } from 'react-redux';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useState, useEffect } from 'react';
+import { Provider } from 'react-redux';
+import { store } from './app/store';
+import { ThemeProvider } from './context/ThemeContext';
 
 // Layout components
 import Layout from './components/Layout';
@@ -62,51 +65,55 @@ function App() {
   };
   
   return (
-    <Router>
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-200">
-        <ToastContainer
-          position="top-right"
-          autoClose={5000}
-          hideProgressBar={false}
-          newestOnTop
-          closeOnClick
-          rtl={false}
-          pauseOnFocusLoss
-          draggable
-          pauseOnHover
-          theme={isDarkMode ? "dark" : "light"}
-        />
-        
-        <Routes>
-          {/* Public Routes */}
-          <Route element={<PublicLayout />}>
-            <Route path="/" element={<Landing />} />
-            <Route path="/login" element={user ? <Navigate to="/dashboard" /> : <Login />} />
-            <Route path="/register" element={user ? <Navigate to="/dashboard" /> : <Register />} />
-            <Route path="/forgot-password" element={user ? <Navigate to="/dashboard" /> : <ForgotPassword />} />
-            <Route path="/reset-password/:token" element={user ? <Navigate to="/dashboard" /> : <ResetPassword />} />
-          </Route>
-          
-          {/* Protected Routes */}
-          <Route element={<Layout toggleDarkMode={toggleDarkMode} isDarkMode={isDarkMode} />}>
-            <Route path="/dashboard" element={user ? <Dashboard /> : <Navigate to="/login" />} />
-            <Route path="/habits/new" element={user ? <CreateHabit /> : <Navigate to="/login" />} />
-            <Route path="/habits/:id" element={user ? <HabitDetails /> : <Navigate to="/login" />} />
-            <Route path="/habits/:id/edit" element={user ? <EditHabit /> : <Navigate to="/login" />} />
-            <Route path="/profile" element={user ? <Profile /> : <Navigate to="/login" />} />
-            <Route path="/achievements" element={user ? <Achievements /> : <Navigate to="/login" />} />
-            <Route path="/community" element={user ? <Community /> : <Navigate to="/login" />} />
-            <Route path="/community/post/:id" element={user ? <Post /> : <Navigate to="/login" />} />
-            <Route path="/community/new" element={user ? <CreatePost /> : <Navigate to="/login" />} />
-            <Route path="/notifications" element={user ? <Notifications /> : <Navigate to="/login" />} />
-            <Route path="/settings" element={user ? <Settings /> : <Navigate to="/login" />} />
-          </Route>
-          
-          {/* 404 Route */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </div>
-    </Router>
+    <Provider store={store}>
+      <ThemeProvider>
+        <Router>
+          <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-200">
+            <ToastContainer
+              position="top-right"
+              autoClose={5000}
+              hideProgressBar={false}
+              newestOnTop
+              closeOnClick
+              rtl={false}
+              pauseOnFocusLoss
+              draggable
+              pauseOnHover
+              theme={isDarkMode ? "dark" : "light"}
+            />
+            
+            <Routes>
+              {/* Public Routes */}
+              <Route element={<PublicLayout />}>
+                <Route path="/" element={<Landing />} />
+                <Route path="/login" element={user ? <Navigate to="/dashboard" /> : <Login />} />
+                <Route path="/register" element={user ? <Navigate to="/dashboard" /> : <Register />} />
+                <Route path="/forgot-password" element={user ? <Navigate to="/dashboard" /> : <ForgotPassword />} />
+                <Route path="/reset-password/:token" element={user ? <Navigate to="/dashboard" /> : <ResetPassword />} />
+              </Route>
+              
+              {/* Protected Routes */}
+              <Route element={<Layout toggleDarkMode={toggleDarkMode} isDarkMode={isDarkMode} />}>
+                <Route path="/dashboard" element={user ? <Dashboard /> : <Navigate to="/login" />} />
+                <Route path="/habits/new" element={user ? <CreateHabit /> : <Navigate to="/login" />} />
+                <Route path="/habits/:id" element={user ? <HabitDetails /> : <Navigate to="/login" />} />
+                <Route path="/habits/:id/edit" element={user ? <EditHabit /> : <Navigate to="/login" />} />
+                <Route path="/profile" element={user ? <Profile /> : <Navigate to="/login" />} />
+                <Route path="/achievements" element={user ? <Achievements /> : <Navigate to="/login" />} />
+                <Route path="/community" element={user ? <Community /> : <Navigate to="/login" />} />
+                <Route path="/community/post/:id" element={user ? <Post /> : <Navigate to="/login" />} />
+                <Route path="/community/new" element={user ? <CreatePost /> : <Navigate to="/login" />} />
+                <Route path="/notifications" element={user ? <Notifications /> : <Navigate to="/login" />} />
+                <Route path="/settings" element={user ? <Settings /> : <Navigate to="/login" />} />
+              </Route>
+              
+              {/* 404 Route */}
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </div>
+        </Router>
+      </ThemeProvider>
+    </Provider>
   );
 }
 

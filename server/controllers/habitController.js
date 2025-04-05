@@ -213,6 +213,7 @@ const deleteHabit = async (req, res) => {
 // @access  Private
 const completeHabit = async (req, res) => {
   try {
+    // console.log('Completing habit:', req.params.id);
     const habit = await Habit.findById(req.params.id);
     
     if (!habit) {

@@ -72,7 +72,7 @@ const completeHabit = async (habitId, token) => {
     }
   };
   
-  const response = await axios.post(`${API_URL}/api/habits` + habitId + '/complete', {}, config);
+  const response = await axios.post(`${API_URL}/api/habits/` + habitId + '/complete', {}, config);
   return response.data;
 };
 
