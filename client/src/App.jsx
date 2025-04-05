@@ -28,7 +28,7 @@ import HabitDetails from './pages/HabitDetails';
 import CreateHabit from './pages/CreateHabit';
 import EditHabit from './pages/EditHabit';
 import Profile from './pages/Profile';
-import Achievements from './pages/Achievements';
+import Leaderboard from './pages/Leaderboard';
 import Community from './pages/Community';
 import Post from './pages/Post';
 import CreatePost from './pages/CreatePost';
@@ -130,7 +130,7 @@ function App() {
                 <Route path="/habits/:id" element={user ? <HabitDetails /> : <Navigate to="/login" />} />
                 <Route path="/habits/:id/edit" element={user ? <EditHabit /> : <Navigate to="/login" />} />
                 <Route path="/profile" element={user ? <Profile /> : <Navigate to="/login" />} />
-                <Route path="/achievements" element={user ? <Achievements /> : <Navigate to="/login" />} />
+                <Route path="/achievements" element={user ? <Leaderboard /> : <Navigate to="/login" />} />
                 <Route path="/community" element={user ? <Community /> : <Navigate to="/login" />} />
                 <Route path="/community/post/:id" element={user ? <Post /> : <Navigate to="/login" />} />
                 <Route path="/community/new" element={user ? <CreatePost /> : <Navigate to="/login" />} />
