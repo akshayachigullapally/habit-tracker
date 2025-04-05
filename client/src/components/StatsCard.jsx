@@ -1,3 +1,5 @@
+import React from 'react';
+
 const StatsCard = ({ title, value, description, icon, color, progress }) => {
   // Determine color classes based on the color prop
   const getColorClasses = (colorName) => {
