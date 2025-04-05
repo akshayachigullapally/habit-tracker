@@ -36,6 +36,9 @@ import Notifications from './pages/Notifications';
 import Settings from './pages/Settings';
 import NotFound from './pages/NotFound';
 
+// Import the new component
+import NotificationPopupManager from './components/NotificationPopupManager';
+
 function App() {
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth);
@@ -107,6 +110,8 @@ function App() {
               pauseOnHover
               theme={isDarkMode ? "dark" : "light"}
             />
+            
+            <NotificationPopupManager />
             
             <Routes>
               {/* Public Routes */}
